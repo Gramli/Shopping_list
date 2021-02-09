@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Shopping List"),
       ),
-      body: ShoppingListUI(shoppingListDataProvider),
+      body: ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider),
     );
   }
 }

@@ -15,6 +15,10 @@ class ShoppingList {
     return _items;
   }
 
+  bool get isEmpty {
+    return _id == null && (name == "" || name == null) && (items.length == 0);
+  }
+
   ShoppingList(this.name, this._created);
   ShoppingList.withId(this._id, this.name, this._created);
 }

@@ -16,6 +16,7 @@ class ShoppingListDataProvider {
   Future<int> insertWithItems(ShoppingList shoppingList) async {
     var result = await _insert(shoppingList);
     for (var shoppingItem in shoppingList.items) {
+      shoppingItem.shoppingListId = result;
       await _shoppingItemDataProvider.insert(shoppingItem);
     }
     return result;
@@ -53,7 +54,11 @@ class ShoppingListDataProvider {
 
   Future<int> updateWithItems(ShoppingList shoppingList) {
     for (var shoppingListItem in shoppingList.items) {
-      _shoppingItemDataProvider.update(shoppingListItem);
+      if (shoppingListItem.id != null) {
+        _shoppingItemDataProvider.update(shoppingListItem);
+      } else {
+        _shoppingItemDataProvider.insert(shoppingListItem);
+      }
     }
     return _update(shoppingList);
   }
@@ -66,7 +71,9 @@ class ShoppingListDataProvider {
 
   Future<int> deleteWithItems(ShoppingList shoppingList) async {
     for (var shoppingListItem in shoppingList.items) {
-      _shoppingItemDataProvider.delete(shoppingListItem.id);
+      if (shoppingListItem.id != null) {
+        _shoppingItemDataProvider.delete(shoppingListItem.id);
+      }
     }
     return _delete(shoppingList);
   }

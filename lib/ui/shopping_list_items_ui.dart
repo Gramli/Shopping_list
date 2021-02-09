@@ -3,51 +3,64 @@ import 'package:shopping_list/model/shopping_item_m.dart';
 import 'package:shopping_list/model/shopping_list_m.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
+import 'package:shopping_list/ui/text_control.dart';
 
 class ShoppingListItemsUI extends StatefulWidget {
   final ShoppingList _shoppingList;
   final ShoppingListDataProvider _shoppingListDataProvider;
-  ShoppingListItemsUI(this._shoppingList, this._shoppingListDataProvider);
+  final ShoppingItemDataProvider _shoppingItemDataProvider;
+
+  ShoppingListItemsUI(this._shoppingList, this._shoppingListDataProvider,
+      this._shoppingItemDataProvider);
 
   @override
-  State<StatefulWidget> createState() =>
-      ShoppingListItemsState(_shoppingList, _shoppingListDataProvider);
+  State<StatefulWidget> createState() => ShoppingListItemsState(
+      _shoppingList, _shoppingListDataProvider, _shoppingItemDataProvider);
 }
 
 class ShoppingListItemsState extends State<ShoppingListItemsUI> {
-  ShoppingList _shoppingList;
-  ShoppingListDataProvider _shoppingListDataProvider;
-  ShoppingItemDataProvider _shoppingItemDataProvider;
+  final ShoppingList _shoppingList;
+  final ShoppingListDataProvider _shoppingListDataProvider;
+  final ShoppingItemDataProvider _shoppingItemDataProvider;
 
-  var _shoppingListNameController = TextEditingController();
-  var _shoppingListItemsNamesControllers =
-      new Map<String, TextEditingController>();
+  final _shoppingListNameController =
+      TextControl(TextEditingController(), FocusNode());
+  final _shoppingListItemsControllers = new Map<String, TextControl>();
 
-  ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider);
+  ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider,
+      this._shoppingItemDataProvider);
 
   void dispose() {
-    _shoppingListItemsNamesControllers.forEach((key, value) {
+    _shoppingListItemsControllers.forEach((key, value) {
       value.dispose();
     });
-
     _shoppingListNameController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _shoppingListNameController.text = _shoppingList.name;
+    _shoppingListNameController.nameEditingController.text = _shoppingList.name;
+    if (_shoppingList.isEmpty) {
+      _shoppingListNameController.nameFocusNode.requestFocus();
+    }
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: TextField(
-          controller: _shoppingListNameController,
+          controller: _shoppingListNameController.nameEditingController,
           onChanged: (value) => {_shoppingList.name = value},
+          focusNode: _shoppingListNameController.nameFocusNode,
+          onEditingComplete: () =>
+              _shoppingListNameController.nameFocusNode.unfocus(),
         ),
         actions: [
-          OutlinedButton(
-            child: Text("Submit"),
+          ElevatedButton(
+            child: Icon(
+              Icons.arrow_back_ios,
+              size: 22,
+            ),
             onPressed: _saveAndNavigateBack,
           )
         ],
@@ -55,9 +68,16 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
       body: _createItemsListView(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          _shoppingListNameController.nameFocusNode.unfocus();
+          var newShoppingItem = ShoppingItem("", false, _shoppingList.id);
           setState(() {
-            _shoppingList.items
-                .insert(0, ShoppingItem("", false, _shoppingList.id));
+            _shoppingList.items.insert(0, newShoppingItem);
+          });
+
+          var shoppingItemKey = _generateShoppingItemKey(newShoppingItem);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            FocusScope.of(context).requestFocus(
+                _shoppingListItemsControllers[shoppingItemKey].nameFocusNode);
           });
         },
         child: Icon(Icons.add),
@@ -67,6 +87,11 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
   }
 
   void _saveAndNavigateBack() {
+    if (_shoppingList.isEmpty) {
+      Navigator.pop(context, false);
+      return;
+    }
+
     if (_shoppingList.id == null) {
       _shoppingListDataProvider.insertWithItems(_shoppingList);
     } else {
@@ -80,27 +105,32 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
       itemCount: _shoppingList.items.length,
       itemBuilder: (context, index) {
         var shoppingListItem = _shoppingList.items[index];
-        var shoppingListItemKey = _createShoppingListItemKey(shoppingListItem);
-        var shoppingListItemController =
-            TextEditingController(text: shoppingListItem.name);
-        _shoppingListItemsNamesControllers[shoppingListItemKey] =
-            shoppingListItemController;
+        var shoppingItemKey = _generateShoppingItemKey(shoppingListItem);
+        _addNewShoppingItemControl(shoppingListItem, shoppingItemKey);
 
         return Dismissible(
-            key: Key(shoppingListItemKey),
+            key: Key(shoppingItemKey),
             onDismissed: (direction) {
               setState(() {
-                _shoppingList.items.remove(shoppingListItem);
                 _shoppingItemDataProvider.delete(shoppingListItem.id);
+                _shoppingList.items.remove(shoppingListItem);
               });
               Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text("${shoppingListItem.name} dismissed")));
+                  content: Text("${shoppingListItem.name} dismissed"),
+                  duration: Duration(seconds: 1)));
             },
             background: Container(color: Colors.blueGrey[100]),
             child: CheckboxListTile(
               title: TextField(
-                controller: shoppingListItemController,
+                controller: _shoppingListItemsControllers[shoppingItemKey]
+                    .nameEditingController,
+                focusNode: _shoppingListItemsControllers[shoppingItemKey]
+                    .nameFocusNode,
                 onChanged: (value) => {shoppingListItem.name = value},
+                onEditingComplete: () =>
+                    _shoppingListItemsControllers[shoppingItemKey]
+                        .nameFocusNode
+                        .unfocus(),
               ),
               controlAffinity: ListTileControlAffinity.trailing,
               value: _shoppingList.items[index].checked,
@@ -116,7 +146,18 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
     );
   }
 
-  String _createShoppingListItemKey(ShoppingItem shoppingListItem) {
-    return "${shoppingListItem.id}_${shoppingListItem.name}";
+  void _addNewShoppingItemControl(
+      ShoppingItem shoppingItem, String shoppingItemKey) {
+    var shoppingItemController = _createShoppingItemControl(shoppingItem);
+    _shoppingListItemsControllers[shoppingItemKey] = shoppingItemController;
+  }
+
+  TextControl _createShoppingItemControl(ShoppingItem shoppingItem) {
+    return TextControl(
+        TextEditingController(text: shoppingItem.name), FocusNode());
+  }
+
+  String _generateShoppingItemKey(ShoppingItem shoppingItem) {
+    return "${shoppingItem.id}${shoppingItem.name}${shoppingItem.hashCode}";
   }
 }
