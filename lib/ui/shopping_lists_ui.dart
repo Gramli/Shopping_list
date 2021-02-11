@@ -3,6 +3,7 @@ import 'package:shopping_list/model/shopping_list_m.dart';
 import 'package:shopping_list/ui/shopping_list_items_ui.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import "package:shopping_list/data_provider/shopping_item_dp.dart";
+import 'package:intl/intl.dart';
 
 class ShoppingListUI extends StatefulWidget {
   final ShoppingListDataProvider _shoppingListDataProvider;
@@ -19,6 +20,7 @@ class ShoppingListState extends State<ShoppingListUI> {
   List<ShoppingList> _shoppingLists;
   ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
+  final dateTimeFormater = DateFormat("yyyy-MM-dd");
 
   ShoppingListState(
       this._shoppingListDataProvider, this._shoppingItemDataProvider);
@@ -81,7 +83,8 @@ class ShoppingListState extends State<ShoppingListUI> {
                         color: Colors.blue,
                       ),
                       title: Text(shoppingList.name),
-                      subtitle: Text(shoppingList.created.toString()),
+                      subtitle:
+                          Text(dateTimeFormater.format(shoppingList.created)),
                       trailing: Wrap(
                         children: [Text(_getCheckedCountFormat(shoppingList))],
                       ),

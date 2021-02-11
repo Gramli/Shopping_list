@@ -121,27 +121,26 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
             },
             background: Container(color: Colors.blueGrey[100]),
             child: CheckboxListTile(
-              title: TextField(
-                controller: _shoppingListItemsControllers[shoppingItemKey]
-                    .nameEditingController,
-                focusNode: _shoppingListItemsControllers[shoppingItemKey]
-                    .nameFocusNode,
-                onChanged: (value) => {shoppingListItem.name = value},
-                onEditingComplete: () =>
-                    _shoppingListItemsControllers[shoppingItemKey]
-                        .nameFocusNode
-                        .unfocus(),
-              ),
-              controlAffinity: ListTileControlAffinity.trailing,
-              value: _shoppingList.items[index].checked,
-              onChanged: (value) {
-                setState(() {
-                  shoppingListItem.checked = value;
-                });
-              },
-              //activeColor: Colors.teal[50],
-              //checkColor: Colors.teal[900],
-            ));
+                title: TextField(
+                  controller: _shoppingListItemsControllers[shoppingItemKey]
+                      .nameEditingController,
+                  focusNode: _shoppingListItemsControllers[shoppingItemKey]
+                      .nameFocusNode,
+                  onChanged: (value) => {shoppingListItem.name = value},
+                  onEditingComplete: () =>
+                      _shoppingListItemsControllers[shoppingItemKey]
+                          .nameFocusNode
+                          .unfocus(),
+                ),
+                controlAffinity: ListTileControlAffinity.trailing,
+                value: _shoppingList.items[index].checked,
+                onChanged: (value) {
+                  setState(() {
+                    shoppingListItem.checked = value;
+                  });
+                },
+                //activeColor: Colors.teal[50],
+                checkColor: Colors.blueGrey[200]));
       },
     );
   }
