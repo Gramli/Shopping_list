@@ -13,16 +13,16 @@ class ShoppingListUI extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() =>
-      ShoppingListState(_shoppingListDataProvider, _shoppingItemDataProvider);
+      _ShoppingListState(_shoppingListDataProvider, _shoppingItemDataProvider);
 }
 
-class ShoppingListState extends State<ShoppingListUI> {
+class _ShoppingListState extends State<ShoppingListUI> {
   List<ShoppingList> _shoppingLists;
   ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
   final dateTimeFormater = DateFormat("yyyy-MM-dd");
 
-  ShoppingListState(
+  _ShoppingListState(
       this._shoppingListDataProvider, this._shoppingItemDataProvider);
 
   @override
@@ -53,18 +53,6 @@ class ShoppingListState extends State<ShoppingListUI> {
         tooltip: "Add new shopping list.",
       ),
     );
-  }
-
-  void _navigateToShoppingListItems(ShoppingList shoppingList) async {
-    var result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ShoppingListItemsUI(shoppingList,
-                _shoppingListDataProvider, _shoppingItemDataProvider)));
-
-    if (result) {
-      _loadData();
-    }
   }
 
   ListView _createShoppingListListView() {
@@ -121,6 +109,18 @@ class ShoppingListState extends State<ShoppingListUI> {
         _shoppingLists = value;
       });
     });
+  }
+
+  void _navigateToShoppingListItems(ShoppingList shoppingList) async {
+    var result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ShoppingListItemsUI(shoppingList,
+                _shoppingListDataProvider, _shoppingItemDataProvider)));
+
+    if (result) {
+      _loadData();
+    }
   }
 
   String _getCheckedCountFormat(ShoppingList shoppingList) {

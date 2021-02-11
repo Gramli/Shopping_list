@@ -14,11 +14,11 @@ class ShoppingListItemsUI extends StatefulWidget {
       this._shoppingItemDataProvider);
 
   @override
-  State<StatefulWidget> createState() => ShoppingListItemsState(
+  State<StatefulWidget> createState() => _ShoppingListItemsState(
       _shoppingList, _shoppingListDataProvider, _shoppingItemDataProvider);
 }
 
-class ShoppingListItemsState extends State<ShoppingListItemsUI> {
+class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
   final ShoppingList _shoppingList;
   final ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
@@ -27,7 +27,7 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
       TextControl(TextEditingController(), FocusNode());
   final _shoppingListItemsControllers = new Map<String, TextControl>();
 
-  ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider,
+  _ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider,
       this._shoppingItemDataProvider);
 
   @override
