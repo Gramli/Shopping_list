@@ -42,11 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
     var shoppingListDataProvider =
         ShoppingListDataProvider(_database, shoppingItemDataProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Shopping List"),
-      ),
-      body: ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider),
-    );
+    return ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider);
   }
 }

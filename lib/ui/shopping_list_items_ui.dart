@@ -30,6 +30,7 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
   ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider,
       this._shoppingItemDataProvider);
 
+  @override
   void dispose() {
     _shoppingListItemsControllers.forEach((key, value) {
       value.dispose();
@@ -49,11 +50,12 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: TextField(
+          keyboardType: TextInputType.text,
+          style: TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
           controller: _shoppingListNameController.nameEditingController,
           onChanged: (value) => {_shoppingList.name = value},
           focusNode: _shoppingListNameController.nameFocusNode,
-          onEditingComplete: () =>
-              _shoppingListNameController.nameFocusNode.unfocus(),
         ),
         actions: [
           ElevatedButton(
@@ -74,8 +76,8 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
             _shoppingList.items.insert(0, newShoppingItem);
           });
 
-          var shoppingItemKey = _generateShoppingItemKey(newShoppingItem);
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            var shoppingItemKey = _generateShoppingItemKey(newShoppingItem);
             FocusScope.of(context).requestFocus(
                 _shoppingListItemsControllers[shoppingItemKey].nameFocusNode);
           });
@@ -121,26 +123,25 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
             },
             background: Container(color: Colors.blueGrey[100]),
             child: CheckboxListTile(
-                title: TextField(
-                  controller: _shoppingListItemsControllers[shoppingItemKey]
-                      .nameEditingController,
-                  focusNode: _shoppingListItemsControllers[shoppingItemKey]
-                      .nameFocusNode,
-                  onChanged: (value) => {shoppingListItem.name = value},
-                  onEditingComplete: () =>
-                      _shoppingListItemsControllers[shoppingItemKey]
-                          .nameFocusNode
-                          .unfocus(),
-                ),
-                controlAffinity: ListTileControlAffinity.trailing,
-                value: _shoppingList.items[index].checked,
-                onChanged: (value) {
-                  setState(() {
-                    shoppingListItem.checked = value;
-                  });
-                },
-                //activeColor: Colors.teal[50],
-                checkColor: Colors.blueGrey[200]));
+              title: TextField(
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                    fillColor: _getColorByCheckedField(shoppingListItem),
+                    filled: true),
+                controller: _shoppingListItemsControllers[shoppingItemKey]
+                    .nameEditingController,
+                focusNode: _shoppingListItemsControllers[shoppingItemKey]
+                    .nameFocusNode,
+                onChanged: (value) => {shoppingListItem.name = value},
+              ),
+              controlAffinity: ListTileControlAffinity.trailing,
+              value: _shoppingList.items[index].checked,
+              onChanged: (value) {
+                setState(() {
+                  shoppingListItem.checked = value;
+                });
+              },
+            ));
       },
     );
   }
@@ -158,5 +159,13 @@ class ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   String _generateShoppingItemKey(ShoppingItem shoppingItem) {
     return "${shoppingItem.id}${shoppingItem.name}${shoppingItem.hashCode}";
+  }
+
+  Color _getColorByCheckedField(ShoppingItem shoppingItem) {
+    if (!shoppingItem.checked) {
+      return Colors.transparent;
+    }
+
+    return Colors.blue[100];
   }
 }

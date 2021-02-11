@@ -33,6 +33,18 @@ class ShoppingListState extends State<ShoppingListUI> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Shopping List"),
+        actions: [
+          ElevatedButton(
+            child: Icon(
+              Icons.download_sharp,
+              size: 22,
+            ),
+            onPressed: () => {},
+          )
+        ],
+      ),
       body: _createShoppingListListView(),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
@@ -72,9 +84,9 @@ class ShoppingListState extends State<ShoppingListUI> {
                   duration: Duration(seconds: 1),
                 ));
               },
-              background: Container(color: Colors.blueGrey[50]),
+              background: Container(color: Colors.grey[300]),
               child: Card(
-                  color: Colors.white,
+                  //color: _getBackGroundColor(shoppingList),
                   elevation: 2.0,
                   child: ListTile(
                       leading: Icon(
@@ -82,11 +94,21 @@ class ShoppingListState extends State<ShoppingListUI> {
                         size: 50,
                         color: Colors.blue,
                       ),
-                      title: Text(shoppingList.name),
+                      tileColor: _getColorByCheckedItems(shoppingList),
+                      title: Text(
+                        shoppingList.name,
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       subtitle:
                           Text(dateTimeFormater.format(shoppingList.created)),
                       trailing: Wrap(
-                        children: [Text(_getCheckedCountFormat(shoppingList))],
+                        children: [
+                          Text(
+                            _getCheckedCountFormat(shoppingList),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 16),
+                          )
+                        ],
                       ),
                       onTap: () =>
                           _navigateToShoppingListItems(shoppingList))));
@@ -102,12 +124,16 @@ class ShoppingListState extends State<ShoppingListUI> {
   }
 
   String _getCheckedCountFormat(ShoppingList shoppingList) {
-    var checked = 0;
-    shoppingList.items.forEach((item) {
-      if (item.checked) {
-        checked++;
-      }
-    });
-    return "$checked/${shoppingList.items.length}";
+    var checkedItemsCount = shoppingList.getCheckedItems();
+    return "$checkedItemsCount/${shoppingList.items.length}";
+  }
+
+  Color _getColorByCheckedItems(ShoppingList shoppingList) {
+    var checkedItemsCount = shoppingList.getCheckedItems();
+    if (checkedItemsCount < shoppingList.items.length) {
+      return Colors.white;
+    }
+
+    return Colors.blue[100];
   }
 }

@@ -21,4 +21,14 @@ class ShoppingList {
 
   ShoppingList(this.name, this._created);
   ShoppingList.withId(this._id, this.name, this._created);
+
+  int getCheckedItems() {
+    var checked = 0;
+    items.forEach((item) {
+      if (item.checked) {
+        checked++;
+      }
+    });
+    return checked;
+  }
 }
