@@ -42,9 +42,6 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
   @override
   Widget build(BuildContext context) {
     _shoppingListNameController.nameEditingController.text = _shoppingList.name;
-    if (_shoppingList.isEmpty) {
-      _shoppingListNameController.nameFocusNode.requestFocus();
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +60,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
               Icons.arrow_back_ios,
               size: 22,
             ),
-            onPressed: _saveAndNavigateBack,
+            onPressed: _saveAndNavigateToShoppingListBack,
           )
         ],
       ),
@@ -88,7 +85,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
     );
   }
 
-  void _saveAndNavigateBack() {
+  void _saveAndNavigateToShoppingListBack() {
     if (_shoppingList.isEmpty) {
       Navigator.pop(context, false);
       return;

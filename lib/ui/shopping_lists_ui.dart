@@ -4,6 +4,7 @@ import 'package:shopping_list/ui/shopping_list_items_ui.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import "package:shopping_list/data_provider/shopping_item_dp.dart";
 import 'package:intl/intl.dart';
+import 'package:shopping_list/ui/shopping_list_fast_create_ui.dart';
 
 class ShoppingListUI extends StatefulWidget {
   final ShoppingListDataProvider _shoppingListDataProvider;
@@ -35,20 +36,12 @@ class _ShoppingListState extends State<ShoppingListUI> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Shopping List"),
-        actions: [
-          ElevatedButton(
-            child: Icon(
-              Icons.download_sharp,
-              size: 22,
-            ),
-            onPressed: () => {},
-          )
-        ],
       ),
       body: _createShoppingListListView(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            _navigateToShoppingListItems(ShoppingList("", DateTime.now())),
+        onPressed: () {
+          _navigateToListItemsImport();
+        },
         child: Icon(Icons.add),
         tooltip: "Add new shopping list.",
       ),
@@ -74,7 +67,6 @@ class _ShoppingListState extends State<ShoppingListUI> {
               },
               background: Container(color: Colors.grey[300]),
               child: Card(
-                  //color: _getBackGroundColor(shoppingList),
                   elevation: 2.0,
                   child: ListTile(
                       leading: Icon(
@@ -117,6 +109,18 @@ class _ShoppingListState extends State<ShoppingListUI> {
         MaterialPageRoute(
             builder: (context) => ShoppingListItemsUI(shoppingList,
                 _shoppingListDataProvider, _shoppingItemDataProvider)));
+
+    if (result) {
+      _loadData();
+    }
+  }
+
+  void _navigateToListItemsImport() async {
+    var result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                ShoppingListFastCreateUI(_shoppingListDataProvider)));
 
     if (result) {
       _loadData();
