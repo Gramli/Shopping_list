@@ -1,6 +1,8 @@
 # Shopping list
 
-Mobile application created using Flutter framework and Sqlite database. Application create/edit/show shopping lists and its items.
+Mobile application created using Flutter framework and Sqlite database. Application create/edit/delete/show shopping lists and its items.
+
+
 <p float="left">
   <img src="/assets/main_window.png" width="200">
   <img src="/assets/shoppingList_window.png" width="200">

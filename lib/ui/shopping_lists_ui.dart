@@ -98,6 +98,7 @@ class _ShoppingListState extends State<ShoppingListUI> {
   void _loadData() {
     _shoppingListDataProvider.fetchWithItems().then((value) {
       setState(() {
+        value.sort((a, b) => b.created.compareTo(a.created));
         _shoppingLists = value;
       });
     });

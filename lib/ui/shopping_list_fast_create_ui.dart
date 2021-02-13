@@ -88,7 +88,7 @@ class ShoppingListFastCreateState extends State<ShoppingListFastCreateUI> {
     Navigator.pop(context, false);
   }
 
-  void _submitAndNavigateBack() {
+  void _submitAndNavigateBack() async {
     var shoppingListNotEmpty =
         _shoppingListName != null && _shoppingListName.isNotEmpty;
     var itemsNotEmpty =
@@ -100,11 +100,11 @@ class ShoppingListFastCreateState extends State<ShoppingListFastCreateUI> {
     }
 
     var shoppingList = _generateShoppingListItem();
-    _insertShoppingListToDb(shoppingList);
+    await _insertShoppingListToDb(shoppingList);
     Navigator.pop(context, true);
   }
 
-  void _insertShoppingListToDb(ShoppingList shoppingList) async {
+  Future _insertShoppingListToDb(ShoppingList shoppingList) async {
     await _shoppingListDataProvider.insertWithItems(shoppingList);
   }
 

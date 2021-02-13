@@ -41,6 +41,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   @override
   Widget build(BuildContext context) {
+    _shoppingList.items.sort((a, b) => a.checked ? 1 : -1);
     _shoppingListNameController.nameEditingController.text = _shoppingList.name;
 
     return Scaffold(
@@ -85,16 +86,16 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
     );
   }
 
-  void _saveAndNavigateToShoppingListBack() {
+  void _saveAndNavigateToShoppingListBack() async {
     if (_shoppingList.isEmpty) {
       Navigator.pop(context, false);
       return;
     }
 
     if (_shoppingList.id == null) {
-      _shoppingListDataProvider.insertWithItems(_shoppingList);
+      await _shoppingListDataProvider.insertWithItems(_shoppingList);
     } else {
-      _shoppingListDataProvider.updateWithItems(_shoppingList);
+      await _shoppingListDataProvider.updateWithItems(_shoppingList);
     }
     Navigator.pop(context, true);
   }
