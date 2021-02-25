@@ -1,9 +1,11 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
 import 'package:shopping_list/ui/shopping_lists_ui.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_db_dp.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shopping_list/service/push_notification_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,9 +13,14 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final _shoppingDbDataProvider = ShoppingDbDataProvider();
+  final _pushNotificationService = PushNotificationService();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // ignore: unnecessary_statements
+    _pushNotificationService.onMessageEvent +
+        (args) => _showOnMessageDialog(args, context);
+
     return MaterialApp(
       title: 'Shopping list',
       theme: ThemeData(
@@ -22,6 +29,23 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(_shoppingDbDataProvider.db),
     );
+  }
+
+  void _showOnMessageDialog(EventArgs eventArgs, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+              title: new Text("Material Dialog"),
+              content: new Text("Hey! I'm Coflutter!"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Close me!'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ));
   }
 }
 

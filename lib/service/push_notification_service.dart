@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:event/event.dart';
 
 class PushNotificationService {
   static final PushNotificationService _instance =
@@ -7,37 +8,26 @@ class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool _initialized = false;
 
+  final onMessageEvent = Event();
+
   factory PushNotificationService() {
     return _instance;
   }
 
-  PushNotificationService._internal();
+  PushNotificationService._internal() {
+    _init();
+  }
 
-  Future<void> init() async {
+  Future<void> _init() async {
     if (!_initialized) {
       _firebaseMessaging.requestNotificationPermissions();
-      _firebaseMessaging.configure(
-          onMessage: _onMessage, onLaunch: _onLaunch, onResume: _onResume);
+      _firebaseMessaging.configure(onMessage: _onMessageHandler);
 
       _initialized = true;
     }
   }
 
-  void _onMessage(Map<String, dynamic> inputMessage) {}
-  void _onLaunch(Map<String, dynamic> inputMessage) {}
-  void _onResume(Map<String, dynamic> inputMessage) {}
-
-  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-  if (message.containsKey('data')) {
-    // Handle data message
-    final dynamic data = message['data'];
+  void _onMessageHandler(Map<String, dynamic> inputMessage) {
+    onMessageEvent.broadcast();
   }
-
-  if (message.containsKey('notification')) {
-    // Handle notification message
-    final dynamic notification = message['notification'];
-  }
-
-  // Or do other work.
-}
 }
