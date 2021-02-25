@@ -1,4 +1,4 @@
-package com.example.shopping_list
+package com.gramli.shoppinglist
 
 import io.flutter.embedding.android.FlutterActivity
 

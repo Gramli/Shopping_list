@@ -21,13 +21,20 @@ class PushNotificationService {
   Future<void> _init() async {
     if (!_initialized) {
       _firebaseMessaging.requestNotificationPermissions();
-      _firebaseMessaging.configure(onMessage: _onMessageHandler);
+      _firebaseMessaging.configure(
+          onMessage: _onMessageHandler, onResume: _onResumeHandler);
 
       _initialized = true;
     }
   }
 
   void _onMessageHandler(Map<String, dynamic> inputMessage) {
+    print(inputMessage["data"]["title"]);
+    onMessageEvent.broadcast();
+  }
+
+  void _onResumeHandler(Map<String, dynamic> inputMessage) {
+    print(inputMessage["data"]["title"]);
     onMessageEvent.broadcast();
   }
 }

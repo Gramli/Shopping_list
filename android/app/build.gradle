@@ -38,8 +38,8 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.shopping_list"
-        minSdkVersion 16
+        applicationId "com.gramli.shoppinglist"
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -63,4 +63,4 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
 }
 
-apply plugin: "com.google.gms:google-services"
+apply plugin: "com.google.gms.google-services"
