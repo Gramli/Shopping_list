@@ -9,6 +9,10 @@ class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool _initialized = false;
 
+  final String _msgNotificationKey = "notification";
+  final String _msgTitleKey = "title";
+  final String _msgBodyKey = "body";
+
   final onMessageEvent = Event<MessageEventArgs>();
 
   factory PushNotificationService() {
@@ -22,14 +26,28 @@ class PushNotificationService {
   Future<void> _init() async {
     if (!_initialized) {
       _firebaseMessaging.requestNotificationPermissions();
-      _firebaseMessaging.configure(onMessage: _onMessageHandler);
+      _firebaseMessaging.configure(onMessage: _onNotificationMessageHandler);
       _initialized = true;
     }
   }
 
-  Future<void> _onMessageHandler(Map<String, dynamic> inputMessage) async {
-    onMessageEvent.broadcast(MessageEventArgs(
-        inputMessage["notification"]["title"],
-        inputMessage["notification"]["body"]));
+  Future<void> _onNotificationMessageHandler(
+      Map<String, dynamic> inputMessage) async {
+    try {
+      if (!inputMessage.containsKey(_msgNotificationKey)) {
+        return;
+      }
+
+      var inputMessageBody = inputMessage[_msgNotificationKey];
+
+      if (inputMessageBody.containsKey(_msgTitleKey) &&
+          inputMessageBody.containsKey(_msgBodyKey)) {
+        onMessageEvent.broadcast(MessageEventArgs(
+            inputMessage[_msgNotificationKey][_msgTitleKey],
+            inputMessage[_msgNotificationKey][_msgBodyKey]));
+      }
+    } catch (ex) {
+      print(ex);
+    }
   }
 }
