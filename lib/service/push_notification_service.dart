@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:event/event.dart';
+import 'package:shopping_list/service/MessageEventArgs.dart';
 
 class PushNotificationService {
   static final PushNotificationService _instance =
@@ -8,7 +9,7 @@ class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool _initialized = false;
 
-  final onMessageEvent = Event();
+  final onMessageEvent = Event<MessageEventArgs>();
 
   factory PushNotificationService() {
     return _instance;
@@ -21,20 +22,14 @@ class PushNotificationService {
   Future<void> _init() async {
     if (!_initialized) {
       _firebaseMessaging.requestNotificationPermissions();
-      _firebaseMessaging.configure(
-          onMessage: _onMessageHandler, onResume: _onResumeHandler);
-
+      _firebaseMessaging.configure(onMessage: _onMessageHandler);
       _initialized = true;
     }
   }
 
-  void _onMessageHandler(Map<String, dynamic> inputMessage) {
-    print(inputMessage["data"]["title"]);
-    onMessageEvent.broadcast();
-  }
-
-  void _onResumeHandler(Map<String, dynamic> inputMessage) {
-    print(inputMessage["data"]["title"]);
-    onMessageEvent.broadcast();
+  Future<void> _onMessageHandler(Map<String, dynamic> inputMessage) async {
+    onMessageEvent.broadcast(MessageEventArgs(
+        inputMessage["notification"]["title"],
+        inputMessage["notification"]["body"]));
   }
 }
