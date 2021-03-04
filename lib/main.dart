@@ -1,4 +1,3 @@
-import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
 import 'package:shopping_list/service/MessageEventArgs.dart';
@@ -47,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState(this._database, this._pushNotificationService);
   @override
   Widget build(BuildContext context) {
+    // ignore: unnecessary_statements
     _pushNotificationService.onMessageEvent +
         (args) => _showOnMessageDialog(args, context);
 
