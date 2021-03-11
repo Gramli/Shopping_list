@@ -86,7 +86,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
     );
   }
 
-  void _saveAndNavigateToShoppingListBack() async {
+  Future _saveAndNavigateToShoppingListBack() async {
     if (_shoppingList.isEmpty) {
       Navigator.pop(context, false);
       return;

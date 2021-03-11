@@ -102,6 +102,21 @@ class ShoppingListDataProvider {
     return mapResult;
   }
 
+  Future<ShoppingList> getById(int id) async {
+    var rawShoppingList = await _database.then((database) => database.rawQuery(
+        "SELECT * FROM $_tableName WHERE id = $id ORDER BY $_colCreated ASC"));
+
+    if (rawShoppingList.length == 0) {
+      throw ArgumentError("Id:$id does not exists!");
+    }
+
+    if (rawShoppingList.length > 1) {
+      throw Exception("There is more items with same id:$id");
+    }
+
+    return _fromObject(rawShoppingList[0]);
+  }
+
   static createTable(Database db) async {
     var createTableQuery =
         "CREATE TABLE $_tableName($_colId INTEGER PRIMARY KEY,"
