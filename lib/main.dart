@@ -6,6 +6,7 @@ import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_db_dp.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:shopping_list/service/push_notification_service.dart';
+import 'package:shopping_list/service/local_notification_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Future<Database> _database;
   final PushNotificationService _pushNotificationService;
+  LocalNotificationService _localNotificationService;
+
   _MyHomePageState(this._database, this._pushNotificationService);
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
     var shoppingListDataProvider =
         ShoppingListDataProvider(_database, shoppingItemDataProvider);
 
-    return ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider);
+    _localNotificationService = LocalNotificationService(
+        context, shoppingItemDataProvider, shoppingListDataProvider);
+
+    return ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider,
+        _localNotificationService);
   }
 
   Future<void> _showOnMessageDialog(

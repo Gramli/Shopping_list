@@ -20,9 +20,8 @@ class LocalNotificationService {
   Future<void> _init() async {
     _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-//TODO IMPLEMENT ICON
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     final IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
             onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
@@ -49,28 +48,11 @@ class LocalNotificationService {
 
   Future _onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
-    // display a dialog with the notification details, tap ok to go to another page
-
     var shoppingListItemUI = await _createShoppingListItemsUI(payload);
-    showDialog(
-      context: _context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text(title),
-        content: Text(body),
-        actions: [
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            child: Text('Ok'),
-            onPressed: () async {
-              Navigator.of(context, rootNavigator: true).pop();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => shoppingListItemUI),
-              );
-            },
-          )
-        ],
-      ),
+    Navigator.of(_context, rootNavigator: true).pop();
+    await Navigator.push(
+      _context,
+      MaterialPageRoute(builder: (context) => shoppingListItemUI),
     );
   }
 
@@ -88,11 +70,15 @@ class LocalNotificationService {
         payload: shoppingList.id.toString());
   }
 
+  Future<void> cancelNotification(int shoppingListId) {
+    return _flutterLocalNotificationsPlugin.cancel(shoppingListId);
+  }
+
   StringBuffer _createShoppingListItemsBuffer(ShoppingList shoppingList) {
     var itemsBuffer = new StringBuffer();
 
     for (var shoppingListItem in shoppingList.items) {
-      itemsBuffer.writeln(shoppingListItem.name);
+      itemsBuffer.write("${shoppingListItem.name},");
     }
 
     return itemsBuffer;

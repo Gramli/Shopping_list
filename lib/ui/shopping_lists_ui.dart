@@ -5,26 +5,31 @@ import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import "package:shopping_list/data_provider/shopping_item_dp.dart";
 import 'package:intl/intl.dart';
 import 'package:shopping_list/ui/shopping_list_fast_create_ui.dart';
+import 'package:shopping_list/service/local_notification_service.dart';
 
 class ShoppingListUI extends StatefulWidget {
   final ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
-  ShoppingListUI(
-      this._shoppingListDataProvider, this._shoppingItemDataProvider);
+  final LocalNotificationService _localNotificationService;
+  ShoppingListUI(this._shoppingListDataProvider, this._shoppingItemDataProvider,
+      this._localNotificationService);
 
   @override
-  State<StatefulWidget> createState() =>
-      _ShoppingListState(_shoppingListDataProvider, _shoppingItemDataProvider);
+  State<StatefulWidget> createState() => _ShoppingListState(
+      _shoppingListDataProvider,
+      _shoppingItemDataProvider,
+      _localNotificationService);
 }
 
 class _ShoppingListState extends State<ShoppingListUI> {
   List<ShoppingList> _shoppingLists;
-  ShoppingListDataProvider _shoppingListDataProvider;
+  final ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
+  final LocalNotificationService _localNotificationService;
   final dateTimeFormater = DateFormat("yyyy-MM-dd");
 
-  _ShoppingListState(
-      this._shoppingListDataProvider, this._shoppingItemDataProvider);
+  _ShoppingListState(this._shoppingListDataProvider,
+      this._shoppingItemDataProvider, this._localNotificationService);
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +88,12 @@ class _ShoppingListState extends State<ShoppingListUI> {
                           Text(dateTimeFormater.format(shoppingList.created)),
                       trailing: Wrap(
                         children: [
+                          Switch(
+                            value: false,
+                            onChanged: (value) {
+                              _localNotification(value, shoppingList);
+                            },
+                          ),
                           Text(
                             _getCheckedCountFormat(shoppingList),
                             style: TextStyle(
@@ -140,5 +151,15 @@ class _ShoppingListState extends State<ShoppingListUI> {
     }
 
     return Colors.blue[100];
+  }
+
+  void _localNotification(bool show, ShoppingList shoppingList) {
+    setState(() {
+      if (show) {
+        _localNotificationService.showNotification(shoppingList);
+      } else {
+        _localNotificationService.cancelNotification(shoppingList.id);
+      }
+    });
   }
 }
