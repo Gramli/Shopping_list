@@ -44,6 +44,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   @override
   Widget build(BuildContext context) {
+    _shoppingList.notification = false;
     _shoppingList.items.sort((a, b) => a.checked ? 1 : -1);
     _shoppingListNameController.nameEditingController.text = _shoppingList.name;
 
