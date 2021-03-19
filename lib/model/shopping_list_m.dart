@@ -15,6 +15,8 @@ class ShoppingList {
     return _items;
   }
 
+  bool notification = false;
+
   bool get isEmpty {
     return _id == null && (name == "" || name == null) && (items.length == 0);
   }

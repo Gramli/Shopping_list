@@ -32,10 +32,7 @@ class ShoppingListDataProvider {
     var rawShoppingLists = await _fetch();
 
     for (var rawShoppingList in rawShoppingLists) {
-      var shoppingList = _fromObject(rawShoppingList);
-      var shoppingListItems =
-          await _shoppingItemDataProvider.fetchBySoppingListId(shoppingList.id);
-      shoppingList.items.addAll(shoppingListItems);
+      var shoppingList = await _fetchItems(rawShoppingList);
       result.add(shoppingList);
     }
 
@@ -113,8 +110,16 @@ class ShoppingListDataProvider {
     if (rawShoppingList.length > 1) {
       throw Exception("There is more items with same id:$id");
     }
+    return _fetchItems(rawShoppingList[0]);
+  }
 
-    return _fromObject(rawShoppingList[0]);
+  Future<ShoppingList> _fetchItems(Map<String, dynamic> rawShoppingList) async {
+    var shoppingList = _fromObject(rawShoppingList);
+    var shoppingListItems =
+        await _shoppingItemDataProvider.fetchBySoppingListId(shoppingList.id);
+    shoppingList.items.addAll(shoppingListItems);
+
+    return shoppingList;
   }
 
   static createTable(Database db) async {

@@ -12,6 +12,11 @@ class LocalNotificationService {
   final ShoppingItemDataProvider _shoppingItemDataProvider;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
+  final _channelId = "68c72fb0-3b4d-47b4-9f16-8bd97c938580";
+  final _channelName = "ShoppingListLocalNotifications";
+  final _channelDescription =
+      "Shopping List application local notifications channel";
+
   LocalNotificationService(this._context, this._shoppingItemDataProvider,
       this._shoppingListDataProvider) {
     _init();
@@ -99,7 +104,7 @@ class LocalNotificationService {
 
   AndroidNotificationDetails _createAndroidNotificationDetail() {
     return AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
+        _channelId, _channelName, _channelDescription,
         importance: Importance.max, priority: Priority.high, showWhen: false);
   }
 

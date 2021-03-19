@@ -89,7 +89,7 @@ class _ShoppingListState extends State<ShoppingListUI> {
                       trailing: Wrap(
                         children: [
                           Switch(
-                            value: false,
+                            value: shoppingList.notification,
                             onChanged: (value) {
                               _localNotification(value, shoppingList);
                             },
@@ -155,6 +155,7 @@ class _ShoppingListState extends State<ShoppingListUI> {
 
   void _localNotification(bool show, ShoppingList shoppingList) {
     setState(() {
+      shoppingList.notification = show;
       if (show) {
         _localNotificationService.showNotification(shoppingList);
       } else {
