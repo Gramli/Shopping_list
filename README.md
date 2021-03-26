@@ -1,6 +1,7 @@
+It's my introduction app to Dart and Flutter framework.
+
 # Shopping list
 
-It's my introduction app to Dart and Flutter framework.
 Flutter mobile application which create/edit/delete/show shopping lists and its items. 
 
 Application Uses
