@@ -6,6 +6,7 @@ import "package:shopping_list/data_provider/shopping_item_dp.dart";
 import 'package:intl/intl.dart';
 import 'package:shopping_list/ui/shopping_list_fast_create_ui.dart';
 import 'package:shopping_list/service/local_notification_service.dart';
+import 'package:shopping_list/ui/shopping_list_pop_args.dart';
 
 class ShoppingListUI extends StatefulWidget {
   final ShoppingListDataProvider _shoppingListDataProvider;
@@ -91,7 +92,10 @@ class _ShoppingListState extends State<ShoppingListUI> {
                           Switch(
                             value: shoppingList.notification,
                             onChanged: (value) {
-                              _localNotification(value, shoppingList);
+                              setState(() {
+                                shoppingList.notification = value;
+                                _showOrCancelNotification(value, shoppingList);
+                              });
                             },
                           ),
                           Text(
@@ -122,8 +126,14 @@ class _ShoppingListState extends State<ShoppingListUI> {
             builder: (context) => ShoppingListItemsUI(shoppingList,
                 _shoppingListDataProvider, _shoppingItemDataProvider)));
 
-    if (result) {
+    var shoppingListPopArgs = result as ShoppingListPopArgs;
+    if (shoppingListPopArgs.shoppingListItemAdded) {
       _loadData();
+    }
+
+    if (shoppingListPopArgs.shoppinListChanged) {
+      _showOrCancelNotification(shoppingListPopArgs.shoppingList.notification,
+          shoppingListPopArgs.shoppingList);
     }
   }
 
@@ -153,14 +163,12 @@ class _ShoppingListState extends State<ShoppingListUI> {
     return Colors.blue[100];
   }
 
-  void _localNotification(bool show, ShoppingList shoppingList) {
-    setState(() {
-      shoppingList.notification = show;
-      if (show) {
-        _localNotificationService.showNotification(shoppingList);
-      } else {
-        _localNotificationService.cancelNotification(shoppingList.id);
-      }
-    });
+  void _showOrCancelNotification(bool show, ShoppingList shoppingList) {
+    shoppingList.notification = show && !shoppingList.allItemsChecked;
+    _localNotificationService.cancelNotification(shoppingList.id);
+
+    if (shoppingList.notification) {
+      _localNotificationService.showNotification(shoppingList);
+    }
   }
 }

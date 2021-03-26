@@ -7,6 +7,7 @@ class ShoppingListDataProvider {
   static const String _colId = "id";
   static const String _colCreated = "created";
   static const String _colName = "name";
+  static const String _colNotification = "notification";
 
   ShoppingItemDataProvider _shoppingItemDataProvider;
   Future<Database> _database;
@@ -84,14 +85,16 @@ class ShoppingListDataProvider {
     var id = object[_colId];
     var created = object[_colCreated];
     var name = object[_colName];
+    var notification = object[_colNotification] == 1;
 
-    return ShoppingList.withId(id, name, DateTime.parse(created));
+    return ShoppingList.withId(id, name, DateTime.parse(created), notification);
   }
 
   Map<String, dynamic> _toMap(ShoppingList shoppingList) {
     var mapResult = Map<String, dynamic>();
     mapResult[_colName] = shoppingList.name;
     mapResult[_colCreated] = shoppingList.created.toString();
+    mapResult[_colNotification] = shoppingList.notification ? 1 : 0;
     if (shoppingList.id != null) {
       mapResult[_colId] = shoppingList.id;
     }
@@ -126,7 +129,8 @@ class ShoppingListDataProvider {
     var createTableQuery =
         "CREATE TABLE $_tableName($_colId INTEGER PRIMARY KEY,"
         "$_colName TEXT,"
-        "$_colCreated TEXT)";
+        "$_colCreated TEXT,"
+        "$_colNotification INTEGER)";
 
     await db.execute(createTableQuery);
   }

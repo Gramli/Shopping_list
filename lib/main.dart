@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list/data_generator/shopping_list_csv_import_dg.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
 import 'package:shopping_list/service/MessageEventArgs.dart';
 import 'package:shopping_list/ui/shopping_lists_ui.dart';
@@ -58,7 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ShoppingListDataProvider(_database, shoppingItemDataProvider);
 
     _localNotificationService = LocalNotificationService(
-        context, shoppingItemDataProvider, shoppingListDataProvider);
+        context,
+        shoppingItemDataProvider,
+        shoppingListDataProvider,
+        ShoppingListCsvImport());
 
     return ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider,
         _localNotificationService);

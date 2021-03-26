@@ -21,8 +21,12 @@ class ShoppingList {
     return _id == null && (name == "" || name == null) && (items.length == 0);
   }
 
+  bool get allItemsChecked {
+    return getCheckedItems() == items.length;
+  }
+
   ShoppingList(this.name, this._created);
-  ShoppingList.withId(this._id, this.name, this._created);
+  ShoppingList.withId(this._id, this.name, this._created, this.notification);
 
   int getCheckedItems() {
     var checked = 0;

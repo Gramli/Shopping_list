@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_list/data_generator/shopping_list_csv_import_dg.dart';
 import 'package:shopping_list/model/shopping_list_m.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shopping_list/ui/shopping_list_items_ui.dart';
@@ -10,6 +11,7 @@ class LocalNotificationService {
   final BuildContext _context;
   final ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
+  final ShoppingListCsvImport _shoppingListCsvImport;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
   final _channelId = "68c72fb0-3b4d-47b4-9f16-8bd97c938580";
@@ -18,7 +20,7 @@ class LocalNotificationService {
       "Shopping List application local notifications channel";
 
   LocalNotificationService(this._context, this._shoppingItemDataProvider,
-      this._shoppingListDataProvider) {
+      this._shoppingListDataProvider, this._shoppingListCsvImport) {
     _init();
   }
 
@@ -62,7 +64,8 @@ class LocalNotificationService {
   }
 
   Future<void> showNotification(ShoppingList shoppingList) {
-    var itemsBuffer = _createShoppingListItemsBuffer(shoppingList);
+    var itemsBuffer =
+        _shoppingListCsvImport.createShoppingListItemsBuffer(shoppingList);
 
     var platformSpecificNotificationDetail =
         _createPlatformSpecificNotificationDetails();
@@ -77,16 +80,6 @@ class LocalNotificationService {
 
   Future<void> cancelNotification(int shoppingListId) {
     return _flutterLocalNotificationsPlugin.cancel(shoppingListId);
-  }
-
-  StringBuffer _createShoppingListItemsBuffer(ShoppingList shoppingList) {
-    var itemsBuffer = new StringBuffer();
-
-    for (var shoppingListItem in shoppingList.items) {
-      itemsBuffer.write("${shoppingListItem.name},");
-    }
-
-    return itemsBuffer;
   }
 
   NotificationDetails _createPlatformSpecificNotificationDetails() {

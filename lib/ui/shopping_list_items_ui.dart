@@ -4,6 +4,7 @@ import 'package:shopping_list/model/shopping_list_m.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
 import 'package:shopping_list/ui/text_control.dart';
+import 'package:shopping_list/ui/shopping_list_pop_args.dart';
 
 class ShoppingListItemsUI extends StatefulWidget {
   final ShoppingList _shoppingList;
@@ -30,6 +31,8 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
   _ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider,
       this._shoppingItemDataProvider);
 
+  bool _shoppingListChanged = false;
+
   @override
   void dispose() {
     _shoppingListItemsControllers.forEach((key, value) {
@@ -41,7 +44,6 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   @override
   Widget build(BuildContext context) {
-    _shoppingList.notification = false;
     _shoppingList.items.sort((a, b) => a.checked ? 1 : -1);
     _shoppingListNameController.nameEditingController.text = _shoppingList.name;
 
@@ -89,7 +91,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   Future _saveAndNavigateToShoppingListBack() async {
     if (_shoppingList.isEmpty) {
-      Navigator.pop(context, false);
+      Navigator.pop(context, ShoppingListPopArgs(false));
       return;
     }
 
@@ -98,7 +100,11 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
     } else {
       await _shoppingListDataProvider.updateWithItems(_shoppingList);
     }
-    Navigator.pop(context, true);
+
+    Navigator.pop(
+        context,
+        ShoppingListPopArgs.withShoppingList(
+            true, _shoppingListChanged, _shoppingList));
   }
 
   ListView _createItemsListView() {
@@ -138,6 +144,9 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
               onChanged: (value) {
                 setState(() {
                   shoppingListItem.checked = value;
+                  if (!_shoppingListChanged) {
+                    _shoppingListChanged = true;
+                  }
                 });
               },
             ));

@@ -30,4 +30,16 @@ class ShoppingListCsvImport {
   String _removeWhitespaceBeforeAndAfter(String value) {
     return value.trimLeft().trimRight();
   }
+
+  StringBuffer createShoppingListItemsBuffer(ShoppingList shoppingList) {
+    var itemsBuffer = new StringBuffer();
+
+    for (var shoppingListItem in shoppingList.items) {
+      if (!shoppingListItem.checked) {
+        itemsBuffer.write("${shoppingListItem.name},");
+      }
+    }
+
+    return itemsBuffer;
+  }
 }
