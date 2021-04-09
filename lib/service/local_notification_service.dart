@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shopping_list/ui/shopping_list_items_ui.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
+import 'package:shopping_list/ui/shopping_lists_ui.dart';
 
 class LocalNotificationService {
   final BuildContext _context;
@@ -55,11 +56,11 @@ class LocalNotificationService {
 
   Future _onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
-    var shoppingListItemUI = await _createShoppingListItemsUI(payload);
+    var shoppingListUI = _createShoppingListItemsUI(payload);
     Navigator.of(_context, rootNavigator: true).pop();
     await Navigator.push(
       _context,
-      MaterialPageRoute(builder: (context) => shoppingListItemUI),
+      MaterialPageRoute(builder: (context) => shoppingListUI),
     );
   }
 
@@ -88,11 +89,9 @@ class LocalNotificationService {
         iOS: _createIOSNotificationDetail());
   }
 
-  Future<ShoppingListItemsUI> _createShoppingListItemsUI(String payload) async {
-    var shoppingListId = int.parse(payload);
-    var shoppingList = await _shoppingListDataProvider.getById(shoppingListId);
-    return ShoppingListItemsUI(
-        shoppingList, _shoppingListDataProvider, _shoppingItemDataProvider);
+  ShoppingListUI _createShoppingListItemsUI(String payload) {
+    return ShoppingListUI(
+        _shoppingListDataProvider, _shoppingItemDataProvider, this);
   }
 
   AndroidNotificationDetails _createAndroidNotificationDetail() {

@@ -58,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var shoppingListDataProvider =
         ShoppingListDataProvider(_database, shoppingItemDataProvider);
 
+
     _localNotificationService = LocalNotificationService(
         context,
         shoppingItemDataProvider,
