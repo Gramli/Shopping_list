@@ -29,7 +29,7 @@ class ShoppingListDataProvider {
   }
 
   Future<List<ShoppingList>> fetchWithItems() async {
-    var result = List<ShoppingList>();
+    var result = <ShoppingList>[];
     var rawShoppingLists = await _fetch();
 
     for (var rawShoppingList in rawShoppingLists) {

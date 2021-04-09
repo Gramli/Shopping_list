@@ -44,7 +44,6 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   @override
   Widget build(BuildContext context) {
-    _shoppingList.notification = false;
     _shoppingList.items.sort((a, b) => a.checked ? 1 : -1);
     _shoppingListNameController.nameEditingController.text = _shoppingList.name;
 
@@ -123,7 +122,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
                 _shoppingItemDataProvider.delete(shoppingListItem.id);
                 _shoppingList.items.remove(shoppingListItem);
               });
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("${shoppingListItem.name} dismissed"),
                   duration: Duration(seconds: 1)));
             },

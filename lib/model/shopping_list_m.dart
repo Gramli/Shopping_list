@@ -10,7 +10,7 @@ class ShoppingList {
   DateTime get created => _created;
   List<ShoppingItem> get items {
     if (_items == null) {
-      _items = List<ShoppingItem>();
+      _items = <ShoppingItem>[];
     }
     return _items;
   }

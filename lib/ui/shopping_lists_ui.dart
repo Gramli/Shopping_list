@@ -35,7 +35,7 @@ class _ShoppingListState extends State<ShoppingListUI> {
   @override
   Widget build(BuildContext context) {
     if (_shoppingLists == null) {
-      _shoppingLists = List<ShoppingList>();
+      _shoppingLists = <ShoppingList>[];
       _loadData();
     }
 
@@ -66,7 +66,7 @@ class _ShoppingListState extends State<ShoppingListUI> {
                   _shoppingListDataProvider.deleteWithItems(shoppingList);
                   _shoppingLists.remove(shoppingList);
                 });
-                Scaffold.of(context).showSnackBar(SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("${shoppingList.name} dismissed"),
                   duration: Duration(seconds: 1),
                 ));

@@ -58,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
     var shoppingListDataProvider =
         ShoppingListDataProvider(_database, shoppingItemDataProvider);
 
-
     _localNotificationService = LocalNotificationService(
         context,
         shoppingItemDataProvider,
@@ -78,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text(eventArgs.title),
               content: Text(eventArgs.message),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text('Ok!'),
                   onPressed: () {
                     Navigator.of(context).pop();
