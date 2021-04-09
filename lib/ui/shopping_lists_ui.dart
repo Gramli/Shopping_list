@@ -23,7 +23,6 @@ class ShoppingListUI extends StatefulWidget {
 }
 
 class _ShoppingListState extends State<ShoppingListUI> {
-  //TODO DAN ADD CONSTRUCTOR WITH ID
   List<ShoppingList> _shoppingLists;
   final ShoppingListDataProvider _shoppingListDataProvider;
   final ShoppingItemDataProvider _shoppingItemDataProvider;
