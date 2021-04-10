@@ -7,6 +7,7 @@ class ShoppingListDataProvider {
   static const String _colId = "id";
   static const String _colCreated = "created";
   static const String _colName = "name";
+  static const String _colNotification = "notification";
 
   ShoppingItemDataProvider _shoppingItemDataProvider;
   Future<Database> _database;
@@ -28,14 +29,11 @@ class ShoppingListDataProvider {
   }
 
   Future<List<ShoppingList>> fetchWithItems() async {
-    var result = List<ShoppingList>();
+    var result = <ShoppingList>[];
     var rawShoppingLists = await _fetch();
 
     for (var rawShoppingList in rawShoppingLists) {
-      var shoppingList = _fromObject(rawShoppingList);
-      var shoppingListItems =
-          await _shoppingItemDataProvider.fetchBySoppingListId(shoppingList.id);
-      shoppingList.items.addAll(shoppingListItems);
+      var shoppingList = await _fetchItems(rawShoppingList);
       result.add(shoppingList);
     }
 
@@ -87,14 +85,16 @@ class ShoppingListDataProvider {
     var id = object[_colId];
     var created = object[_colCreated];
     var name = object[_colName];
+    var notification = object[_colNotification] == 1;
 
-    return ShoppingList.withId(id, name, DateTime.parse(created));
+    return ShoppingList.withId(id, name, DateTime.parse(created), notification);
   }
 
   Map<String, dynamic> _toMap(ShoppingList shoppingList) {
     var mapResult = Map<String, dynamic>();
     mapResult[_colName] = shoppingList.name;
     mapResult[_colCreated] = shoppingList.created.toString();
+    mapResult[_colNotification] = shoppingList.notification ? 1 : 0;
     if (shoppingList.id != null) {
       mapResult[_colId] = shoppingList.id;
     }
@@ -102,11 +102,35 @@ class ShoppingListDataProvider {
     return mapResult;
   }
 
+  Future<ShoppingList> getById(int id) async {
+    var rawShoppingList = await _database.then((database) => database.rawQuery(
+        "SELECT * FROM $_tableName WHERE id = $id ORDER BY $_colCreated ASC"));
+
+    if (rawShoppingList.length == 0) {
+      throw ArgumentError("Id:$id does not exists!");
+    }
+
+    if (rawShoppingList.length > 1) {
+      throw Exception("There is more items with same id:$id");
+    }
+    return _fetchItems(rawShoppingList[0]);
+  }
+
+  Future<ShoppingList> _fetchItems(Map<String, dynamic> rawShoppingList) async {
+    var shoppingList = _fromObject(rawShoppingList);
+    var shoppingListItems =
+        await _shoppingItemDataProvider.fetchBySoppingListId(shoppingList.id);
+    shoppingList.items.addAll(shoppingListItems);
+
+    return shoppingList;
+  }
+
   static createTable(Database db) async {
     var createTableQuery =
         "CREATE TABLE $_tableName($_colId INTEGER PRIMARY KEY,"
         "$_colName TEXT,"
-        "$_colCreated TEXT)";
+        "$_colCreated TEXT,"
+        "$_colNotification INTEGER)";
 
     await db.execute(createTableQuery);
   }

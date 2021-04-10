@@ -1,5 +1,5 @@
-import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_list/data_generator/shopping_list_csv_import_dg.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
 import 'package:shopping_list/service/MessageEventArgs.dart';
 import 'package:shopping_list/ui/shopping_lists_ui.dart';
@@ -7,6 +7,7 @@ import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_db_dp.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:shopping_list/service/push_notification_service.dart';
+import 'package:shopping_list/service/local_notification_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,9 +45,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Future<Database> _database;
   final PushNotificationService _pushNotificationService;
+  LocalNotificationService _localNotificationService;
+
   _MyHomePageState(this._database, this._pushNotificationService);
   @override
   Widget build(BuildContext context) {
+    // ignore: unnecessary_statements
     _pushNotificationService.onMessageEvent +
         (args) => _showOnMessageDialog(args, context);
 
@@ -54,7 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
     var shoppingListDataProvider =
         ShoppingListDataProvider(_database, shoppingItemDataProvider);
 
-    return ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider);
+    _localNotificationService = LocalNotificationService(
+        context,
+        shoppingItemDataProvider,
+        shoppingListDataProvider,
+        ShoppingListCsvImport());
+
+    return ShoppingListUI(shoppingListDataProvider, shoppingItemDataProvider,
+        _localNotificationService);
   }
 
   Future<void> _showOnMessageDialog(
@@ -66,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text(eventArgs.title),
               content: Text(eventArgs.message),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text('Ok!'),
                   onPressed: () {
                     Navigator.of(context).pop();

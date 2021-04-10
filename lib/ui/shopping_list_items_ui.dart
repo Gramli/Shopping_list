@@ -4,6 +4,7 @@ import 'package:shopping_list/model/shopping_list_m.dart';
 import 'package:shopping_list/data_provider/shopping_list_dp.dart';
 import 'package:shopping_list/data_provider/shopping_item_dp.dart';
 import 'package:shopping_list/ui/text_control.dart';
+import 'package:shopping_list/ui/shopping_list_pop_args.dart';
 
 class ShoppingListItemsUI extends StatefulWidget {
   final ShoppingList _shoppingList;
@@ -29,6 +30,8 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
 
   _ShoppingListItemsState(this._shoppingList, this._shoppingListDataProvider,
       this._shoppingItemDataProvider);
+
+  bool _shoppingListChanged = false;
 
   @override
   void dispose() {
@@ -86,9 +89,9 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
     );
   }
 
-  void _saveAndNavigateToShoppingListBack() async {
+  Future _saveAndNavigateToShoppingListBack() async {
     if (_shoppingList.isEmpty) {
-      Navigator.pop(context, false);
+      Navigator.pop(context, ShoppingListPopArgs(false));
       return;
     }
 
@@ -97,7 +100,11 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
     } else {
       await _shoppingListDataProvider.updateWithItems(_shoppingList);
     }
-    Navigator.pop(context, true);
+
+    Navigator.pop(
+        context,
+        ShoppingListPopArgs.withShoppingList(
+            true, _shoppingListChanged, _shoppingList));
   }
 
   ListView _createItemsListView() {
@@ -115,7 +122,7 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
                 _shoppingItemDataProvider.delete(shoppingListItem.id);
                 _shoppingList.items.remove(shoppingListItem);
               });
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("${shoppingListItem.name} dismissed"),
                   duration: Duration(seconds: 1)));
             },
@@ -137,6 +144,9 @@ class _ShoppingListItemsState extends State<ShoppingListItemsUI> {
               onChanged: (value) {
                 setState(() {
                   shoppingListItem.checked = value;
+                  if (!_shoppingListChanged) {
+                    _shoppingListChanged = true;
+                  }
                 });
               },
             ));
